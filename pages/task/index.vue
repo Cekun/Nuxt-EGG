@@ -12,7 +12,7 @@
       <el-col :span="20">
         <block v-if="istaskList === true">
 <!--        <el-tag type="danger">任务进行中({{tasking}})</el-tag>-->
-          <el-button type="primary" @click="groupByTask">组合任务</el-button>
+          <el-button type="primary" @click="groupByTask">组合选中的任务</el-button>
           <el-button type="primary" @click="excTasks">执行选中的任务</el-button>
         <el-table
           :data="tableData"
@@ -24,6 +24,7 @@
           border
           default-expand-all
           @selection-change="handleSelectionChange"
+          @row-contextmenu="rightClick"
           :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         >
           <el-table-column
@@ -94,6 +95,14 @@
             </template>
           </el-table-column>
         </el-table>
+          <div id="contextmenu"
+               v-show="menuVisible"
+               class="menu">
+            <div class="contextmenu__item"
+                 @click="ShowView(CurrentRow)">查看</div>
+            <div class="contextmenu__item"
+                 @click="EditData(CurrentRow)">修改</div>
+          </div>
 
           <p style="height: 10px"></p>
 
@@ -244,13 +253,10 @@
 
 <script>
 import Sortable from 'sortablejs'
-import nestedDraggable from "./nested";
 export default {
-  components: {
-    nestedDraggable
-  },
   data() {
     return {
+      menus: ['详细信息', '方案分析', '方案存库', '清除方案'],
       dialogFormVisible: false,
       formLabelWidth: '120px',
       search: '',
@@ -399,7 +405,8 @@ export default {
         {name : '小明' , age : 14} ,
         {name : '小红' , age : 15}
       ],
-      groupData: []
+      groupData: [],
+      menuVisible: false
     }
   },
   mounted() {
@@ -409,10 +416,52 @@ export default {
     // this.rowDrop()
   },
   methods: {
+    // 自定义菜单的点击事件
+    infoClick(index) {
+      this.$alert('当前table的下标为'+this.currentRowIndex ,'你点击了自定义菜单的'+this.menus[index]+'功能', {
+        confirmButtonText: '确定',
+        callback: action => {
+          var menu = document.querySelector("#menu");
+          menu.style.display = 'none';
+        }
+      });
+    },
     tableRowClassName2 ({row}) {
       if(row.taskType !== 2) {
         console.log('tableclass 2')
         return 'groupCSS'
+      }
+    },
+    rightClick(row, column, event) {
+      this.testModeCode = row.testModeCode
+      this.menuVisible = false // 先把模态框关死，目的是 第二次或者第n次右键鼠标的时候 它默认的是true
+      this.menuVisible = true // 显示模态窗口，跳出自定义菜单栏
+      event.preventDefault() //关闭浏览器右键默认事件
+      this.CurrentRow = row
+      var menu = document.querySelector('.menu')
+      this.styleMenu(menu, event)
+    },
+    foo() {
+      // 取消鼠标监听事件 菜单栏
+      this.menuVisible = false
+      document.removeEventListener('click', this.foo) // 关掉监听，
+    },
+    styleMenu(menu, event) {
+      console.log(event)
+      console.log((menu.scrollTop-menu.offsetTop) + ' ' + (menu.scrollTop-menu.offsetTop))
+      console.log(menu.style.left + ' ' + menu.style.top)
+      menu.style.left = (event.clientX - 200) + 'px';
+      menu.style.top = (event.clientY - 50) + 'px';
+      if (event.clientX > 1800) {
+        menu.style.left = event.clientX - 200 + 'px'
+      } else {
+        menu.style.left = event.clientX - 200 + 'px'
+      }
+      // document.addEventListener('click', this.foo) // 给整个document新增监听鼠标事件，点击任何位置执行foo方法
+      if (event.clientY > 700) {
+        menu.style.top = event.clientY - 200 + 'px'
+      } else {
+        menu.style.top = event.clientY - 50 + 'px'
       }
     },
     tableRowClassName ({ row }) {
@@ -704,5 +753,36 @@ export default {
 }
 .el-table .groupCSS {
   background: #f0f9eb;
+}
+
+.contextmenu__item {
+  display: block;
+  line-height: 34px;
+  text-align: center;
+}
+.contextmenu__item:not(:last-child) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.menu {
+  position: absolute;
+  background-color: #fff;
+  width: 100px;
+  /*height: 106px;*/
+  font-size: 12px;
+  color: #444040;
+  border-radius: 4px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  white-space: nowrap;
+  z-index: 1000;
+}
+.contextmenu__item:hover {
+  cursor: pointer;
+  background: #66b1ff;
+  border-color: #66b1ff;
+  color: #fff;
 }
 </style>

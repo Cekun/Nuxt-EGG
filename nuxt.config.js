@@ -1,7 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'front',
+    title: '全栈项目',
     htmlAttrs: {
       lang: 'en'
     },

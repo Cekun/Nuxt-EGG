@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>用户中心</h1>
+    <i class="el-icon-loading"  v-show="false"/>
     <div id="drag" ref="drag">
       <input type="file" id="file" @change="handleFileChange" />
     </div>
@@ -266,14 +267,18 @@ export default {
           form.append('hash', chunk.hash)
           form.append('name', chunk.name)
           return {form, index: chunk.index}
-        }).map(({form, index}) => this.$http.post('/uploadfile', form, {
-          onUploadProgress: progress => {
-            this.chunks[index].progress = Number(
-              ((progress.loaded / progress.total) * 100).toFixed(2)
-            );
-          }
-        }))
-      await Promise.all(request)
+        })
+        // .map(({form, index}) => this.$http.post('/uploadfile', form, {
+        //   onUploadProgress: progress => {
+        //     this.chunks[index].progress = Number(
+        //       ((progress.loaded / progress.total) * 100).toFixed(2)
+        //     );
+        //   }
+        // }))
+      
+     
+      // await Promise.all(request)  // 尝试申请tcp链接过多，也会造成卡顿
+      await this.sendRequest(request)  // 异步的并发数量控住
       await this.mergeRequest()
       // const form = new FormData();
       // form.append("name", "file");
@@ -290,6 +295,45 @@ export default {
       //     message: '文件上传成功',
       //     type: 'success'
       //   });
+    },
+    /**
+     * limit: 并发数
+     */
+    async sendRequest(chunks, limit=3) {
+      return new Promise((resolve, reject) => {
+        const len = chunks.length;
+        let counter = 0
+        const start = async () => {
+          const task = chunks.shift();
+          if(task) {
+            const { form, index } = task
+            await this.$http.post('/uploadfile', form, {
+              onUploadProgress: progress => {
+                this.chunks[index].progress = Number(
+                  ((progress.loaded / progress.total) * 100).toFixed(2)
+                )
+              }
+            })
+            if(counter==len-1) {
+              // 最后一个任务
+              resolve()
+            } else {
+              counter++
+              start()
+            }
+          }
+        }
+
+        while(limit > 0) {
+          // 启动limit个任务
+          // 模拟延迟
+          setTimeout(()=>{
+            start()
+          }, Math.random()*2000)
+          console.log('limit: ', limit);
+          limit-=1
+        }
+      })
     },
     mergeRequest() {
       this.$http.post('mergefile', {

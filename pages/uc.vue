@@ -28,7 +28,10 @@
         </div>
       </div>
     </div>
-    <el-button type="primary" @click="uploadFile">上传</el-button>
+    <div>
+      <el-button type="primary" @click="uploadFile">上传</el-button>
+    </div>
+    
   </div>
 </template>
 
@@ -231,33 +234,45 @@ export default {
       // 布隆过滤器 损失一小部分的精度，换取效率
       const hash = await this.calculateHashSimple()
       this.hash = hash
+
+      // 问一下后端， 文件是否上传过，如果没有，是否有存在切片
+      const {data:{ uploaded, uploadedList }} = await this.$http.post('/checkfile', {
+        hash,
+        ext: this.file.name.split('.').pop()
+      })
+      if(uploaded) {
+        // 秒传
+        return this.$message('上传成功')
+      } 
       // console.log('hash2: ', hash2);
       this.chunks = chunks.map((chunk, index) => {
         // 切片的名字
         const name = hash + '-' + index
-        return { hash, name, index, chunk: chunk.file, progress: 0 }
+        return { hash, name, index, chunk: chunk.file, progress: uploadedList.indexOf(name) >-1 ? 100 : 0 }
       })
 
-      await this.uploadChunks()
+      await this.uploadChunks(uploadedList)
 
     },
 
-    async uploadChunks() {  
+    async uploadChunks(uploadedList) {  
 
-      const request = this.chunks.map((chunk, index) => {
-        // 转成promise
-        const form = new FormData()
-        form.append('chunk', chunk.chunk)
-        form.append('hash', chunk.hash)
-        form.append('name', chunk.name)
-        return form
-      }).map((form, index) => this.$http.post('/uploadfile', form, {
-        onUploadProgress: progress => {
-          this.chunks[index].progress = Number(
-            ((progress.loaded / progress.total) * 100).toFixed(2)
-          );
-        }
-      }))
+      const request = this.chunks
+        .filter(chunk => uploadedList.indexOf(chunk.name)==-1)
+        .map((chunk) => {
+          // 转成promise
+          const form = new FormData()
+          form.append('chunk', chunk.chunk)
+          form.append('hash', chunk.hash)
+          form.append('name', chunk.name)
+          return {form, index: chunk.index}
+        }).map(({form, index}) => this.$http.post('/uploadfile', form, {
+          onUploadProgress: progress => {
+            this.chunks[index].progress = Number(
+              ((progress.loaded / progress.total) * 100).toFixed(2)
+            );
+          }
+        }))
       await Promise.all(request)
       await this.mergeRequest()
       // const form = new FormData();

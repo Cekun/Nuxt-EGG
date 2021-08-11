@@ -69,13 +69,11 @@ export default {
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = function () {
-          console.log("blobToString", reader);
           const ret = reader.result
             .split("")
             .map(v => v.charCodeAt())
             .map(v => v.toString(16).toUpperCase())
             .join(" ");
-          console.log('123', ret);
           resolve(ret)
         };
         reader.readAsBinaryString(blob);
@@ -225,7 +223,6 @@ export default {
       // }
 
       const chunks = this.createFileChunk(this.file)
-      console.log('chunks: ', this.chunks);
       // 创建一个worker线程，计算MD5 hash值
       // const hash = await this.calculateHashWorker()
       // const hash1 = await this.calculateHashIdle()
@@ -266,7 +263,7 @@ export default {
           form.append('chunk', chunk.chunk)
           form.append('hash', chunk.hash)
           form.append('name', chunk.name)
-          return {form, index: chunk.index}
+          return {form, index: chunk.index, error: 0}
         })
         // .map(({form, index}) => this.$http.post('/uploadfile', form, {
         //   onUploadProgress: progress => {
@@ -278,8 +275,18 @@ export default {
       
      
       // await Promise.all(request)  // 尝试申请tcp链接过多，也会造成卡顿
-      await this.sendRequest(request)  // 异步的并发数量控住
-      await this.mergeRequest()
+      // 异步的并发数量控制
+      try {
+        await this.sendRequest(request)
+        const { code, url } = await this.mergeRequest()
+        if(code == 0) 
+          this.$message({
+            message: '成功上传',
+            type: 'success'
+          });
+      } catch (error) {
+        this.$message.error('上传失败，请重试')
+      }
       // const form = new FormData();
       // form.append("name", "file");
       // form.append("file", this.file);
@@ -296,31 +303,52 @@ export default {
       //     type: 'success'
       //   });
     },
-    /**
+
+    // 上传可能报错，报错之后，进度条变红，开始重试
+    // 一个切片重试失败三次，整体全部终止
+    /** 控制发送请求的并发数
      * limit: 并发数
      */
     async sendRequest(chunks, limit=3) {
       return new Promise((resolve, reject) => {
         const len = chunks.length;
+        if(len==0) resolve()
         let counter = 0
+        let isStop = false
         const start = async () => {
+          if(isStop) return
           const task = chunks.shift();
           if(task) {
             const { form, index } = task
-            await this.$http.post('/uploadfile', form, {
-              onUploadProgress: progress => {
-                this.chunks[index].progress = Number(
-                  ((progress.loaded / progress.total) * 100).toFixed(2)
-                )
+            try {
+              await this.$http.post('/uploadfile', form, {
+                onUploadProgress: progress => {
+                  this.chunks[index].progress = Number(
+                    ((progress.loaded / progress.total) * 100).toFixed(2)
+                  )
+                }
+              })
+              if(counter==len-1) {
+                // 最后一个任务
+                resolve()
+              } else {
+                counter++
+                start()
               }
-            })
-            if(counter==len-1) {
-              // 最后一个任务
-              resolve()
-            } else {
-              counter++
-              start()
+            } catch (e) {
+              this.chunks[index].progress = -1
+              if(task.error<3) {
+                // 报错三次重新执行
+                task.error++
+                chunks.unshift(task)
+                start()
+              } else {
+                // 错误三次直接结束
+                isStop = true
+                reject(task.error)
+              }
             }
+            
           }
         }
 
@@ -330,7 +358,6 @@ export default {
           setTimeout(()=>{
             start()
           }, Math.random()*2000)
-          console.log('limit: ', limit);
           limit-=1
         }
       })

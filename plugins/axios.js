@@ -38,4 +38,4 @@ export default ({store, redirect}) => {
 }
 Vue.prototype.$http = service
 
-
+export const http = service

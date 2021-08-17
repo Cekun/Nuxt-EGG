@@ -34,15 +34,17 @@
 </template>
 
 <script>
+import md5 from 'md5'
 export default {
+  layout: 'login',
   data() {
     return {
       send: { timer: 0 },
       form: {
         passwd: "123456",
-        captcha: "",
-        email: "admin@qq.com",
-        emailcode: ""
+        captcha: "ccc",
+        email: "583988818@qq.com",
+        emailcode: "123"
       },
       captchaUrl: "/api/captcha",
       rules: {
@@ -67,7 +69,7 @@ export default {
           this.$http({
             url: 'user/login',
             method: 'post',
-            data: this.form
+            data: {...this.form, passwd: md5(this.form.passwd)}
           }).then(ret => {
             if(ret.code === 0) {
               localStorage.setItem('token', ret.data.token)
@@ -98,27 +100,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.form {
-  .el-form-item {
-    margin: 0 10% 22px 10%;
-  }
-  .el-input {
-    width: 90%;
-  }
-  .el-image {
-    height: 40px;
-    overflow: initial;
-  }
-}
-.captcha-container {
-  position: relative;
-  .captcha {
-    position: absolute;
-    right: 0;
-  }
-  .codeBtn {
-    width: 99px;
-  }
-}
-</style>
+

@@ -36,7 +36,9 @@
 </template>
 
 <script>
+import md5 from 'md5'
 export default {
+  layout: 'login',
   data() {
     return {
       form: {
@@ -63,9 +65,8 @@ export default {
           this.$http({
             url: 'user/register',
             method: 'post',
-            data: this.form
+            data: { ...this.form, passwd: md5(this.form.passwd) }
           }).then(ret => {
-            console.log('ret', ret);
             if(ret.code === 0) {
               this.$alert('注册成功', '成功', {
                 confirmButtonText: '去登录',

@@ -82,6 +82,9 @@ html {
   box-sizing: border-box;
   background: #eee;
 }
+body { 
+  overflow: hidden;
+}
 .pull-right {
   float: right !important;
 }

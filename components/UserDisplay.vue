@@ -22,7 +22,7 @@ export default {
 <style lang='scss'>
 .user{
   display: inline-block;
-  padding:5px;
+  // padding:5px;
   a{
     color:#67c23a;
     text-decoration: none;

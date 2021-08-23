@@ -4,9 +4,8 @@
     <div class="infinite-list" :style="{ transform: getTransform }">
       <ArticleItem
         ref="items"
-        :id="index"
         class="infinite-list-item"
-        v-for="(item, index) in visibleData"
+        v-for="item in visibleData"
         :article="item"
         :key="item._id"
         :style="{ height: itemSize + 'px' }"
@@ -51,6 +50,7 @@ export default {
     }
   },
   mounted() {
+    this.screenHeight = window.screen.height - 60  
     this.start = 0;
     this.end = this.start + this.visibleCount;
   },

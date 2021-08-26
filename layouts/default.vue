@@ -4,8 +4,8 @@
     <div class="main-container">
       <div>
         <navbar />
+        <tags-view />
       </div>
-      sidebar: {{ sidebar }}
       <!-- <app-main /> -->
       <Nuxt />
     </div>
@@ -15,9 +15,10 @@
 <script>
 import Sidebar from "./components/Sidebar/index.vue";
 import Navbar from "./components/Navbar.vue";
+import TagsView from "./components/TagsView"
 import { mapState } from "vuex";
 export default {
-  components: { Sidebar, Navbar },
+  components: { Sidebar, Navbar, TagsView },
   computed: {
     ...mapState({
       sidebar: (state) => state.app.sidebar,

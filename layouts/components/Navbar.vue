@@ -6,6 +6,7 @@
       class="hamburger-container"
       @toggleClick="toggleSideBar"
     />
+    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
     <div class="right-menu">
       <UserDisplay :user="userinfo" class="right-menu-item" />
@@ -16,11 +17,8 @@
 </template>
 
 <script>
-import Hamburger from "@/components/Hamburger";
 export default {
-  components: {
-    Hamburger,
-  },
+ 
   data() {
     return {
       key: "",

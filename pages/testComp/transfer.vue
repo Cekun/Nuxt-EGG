@@ -4,17 +4,14 @@
       :data="data"
       :titles="['source', 'target']"
       pagination
-      v-model="value"
       filterable
-    >
-    </transfer>
-
-    <p>
+      v-model="value"
+    />
+    <!-- <div>
       <el-transfer v-model="value" :data="data" target-order="original" filterable 
         :format="{noChecked: '${total}',hasChecked: '${checked}/${total}'}">
       </el-transfer>
-      
-    </p>
+    </div> -->
   </div>
 </template>
 
@@ -23,7 +20,7 @@ export default {
   data() {
     return {
       data: [],
-      value: [1,2,3]
+      value: []
     };
   },
   async mounted() {

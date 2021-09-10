@@ -1,12 +1,11 @@
 <template>
   <div class="el-transfer ck-transfer">
-    <p>{{value}}</p> 
     <transfer-panel
       v-bind="$props"
       ref="leftPanel"
       :title="titles[0] || '列表1'"
       :data="sourceData"
-      @changePageIndex="leftPageIndexChange"
+    
       @checked-change="onSourceCheckedChange"
     >
       <slot name="left-footer"></slot>
@@ -34,7 +33,7 @@
       ref="rightPanel"
       :title="titles[1] || '列表2'"
       :data="targetData"
-      @changePageIndex="rightPageIndexChange"
+     
       @checked-change="onTargetCheckedChange"
     >
       <slot name="right-footer"></slot>
@@ -86,14 +85,16 @@ export default {
   },
   computed: {
     sourceData() {
-      const pageIndex = this.leftPageIndex;
-      const filterData = this.data.filter(item => this.value.indexOf(item[this.props.key]) === -1) ;
-      return this.paging(filterData,pageIndex)
+      // const pageIndex = this.leftPageIndex;
+      const filterData = this.data.filter(item => this.value.indexOf(item[this.props.key]) === -1) 
+      // this.leftDataLength = filterData.length
+      return  filterData// this.paging(filterData,pageIndex)
     },
     targetData() {
-      const pageIndex = this.rightPageIndex;
+      // const pageIndex = this.rightPageIndex;
       const filterData = this.data.filter(item => this.value.indexOf(item[this.props.key])>-1) 
-      return this.paging(filterData,pageIndex) 
+      // this.rightDataLength = filterData.length
+      return filterData//  this.paging(filterData,pageIndex) 
     },
     allDataLength() {
       return this.data.length
@@ -152,6 +153,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss">
-</style>

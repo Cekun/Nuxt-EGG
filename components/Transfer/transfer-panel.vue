@@ -4,6 +4,7 @@
       <el-checkbox
         v-model="allChecked"
         @change="handleAllCheckedChange"
+        :indeterminate="isIndeterminate"
       >
         {{ title }} 
         <span>{{ checkedSummary }}</span>
@@ -30,7 +31,7 @@
         class="el-transfer-panel__list"
       >
         <el-checkbox
-          v-for="item in data"
+          v-for="item in filteredData"
           class="el-transfer-panel__item"
           :key="item[keyProp]"
           :label="item[keyProp]"
@@ -43,14 +44,14 @@
     </div>
     <p class="el-transfer-panel__footer">
       <a class="pagination" v-if="pagination">
-        <el-button type="text" size="small" @click="prevPage" :disabled="pageIndex==1">
+        <el-button type="text" size="small" @click="pageIndex-=1" :disabled="pageIndex==1">
           <i class="el-icon-arrow-left" />
         </el-button>
         <input type="text" v-model="pageIndex" @keydown.enter="$emit('changePageIndex',pageIndex)" /> 
         <span class="slash">/</span>
-        {{ Math.ceil(this.transfer.data.length / this.pageSize) }}
+        {{ totalPage }}
         <span></span>
-        <el-button type="text" size="small" @click="nextPage">
+        <el-button type="text" size="small" @click="pageIndex+=1" :disabled="pageIndex==totalPage">
           <i class="el-icon-arrow-right" />
         </el-button>
       </a>
@@ -72,7 +73,12 @@ export default {
     title: String,
     pagination: Boolean,
     filterable: Boolean,
-    placeholder: String,
+    filterMethod: Function,
+    placeholder: {
+      type: String,
+      default: () => '请输入关键字'
+    },
+    dataLength: Number,
   },
   data() {
     return {
@@ -85,12 +91,18 @@ export default {
     }
   },
   computed: {
-    indeterminate() {
-      return true
+    filteredData() {
+      const filteredData =  this.getFilteredData()
+      return this.paging(filteredData, this.pageIndex)
+    },
+    isIndeterminate() {
+      const checkedLength = this.checked.length
+      const filteredData =  this.getFilteredData()
+      return checkedLength > 0 && checkedLength < filteredData.length
     },
     checkedSummary() {
       const checkedLength = this.checked.length;
-      const dataLength = this.transfer.data.length;
+      const dataLength = this.data.length;
       // const { noChecked, hasChecked } = this.format;
       // if (noChecked && hasChecked) {
       //   return checkedLength > 0
@@ -112,32 +124,57 @@ export default {
         : 'search';
     },
     totalPage() {
-      const dataLength = this.transfer.data.length;
-      
+      var filteredData =  this.getFilteredData()
+      return Math.ceil(filteredData.length / this.pageSize)
     }
   },
   watch: {
     checked(val, oldVal) {
       const movedKeys = val.concat(oldVal)
-      console.log('checked-change', val);
       this.$emit('checked-change', val)
     },
     data() {
       const checked = []
-
+      const filteredDataKeys = this.filteredData.map(item => item[this.keyProp])
+      this.checked.forEach(item => {
+        if(filteredDataKeys.indexOf(item) > -1) {
+          checked.push(item)
+        }
+      })
+      this.checked = checked
     }
   },
   methods: {
-    handleAllCheckedChange() {
-      
+    paging(arr, currentPage, pageSize = 10) {
+      var skipNum = (currentPage - 1) * pageSize;
+      var newArr =
+        skipNum + pageSize >= arr.length
+          ? arr.slice(skipNum, arr.length)
+          : arr.slice(skipNum, skipNum + pageSize);
+      return newArr;
+    },
+    getFilteredData() {
+      return this.data.filter(item => {
+        if(typeof this.filterMethod === 'function') {
+          return this.filterMethod(this.query, item)
+        } else {
+          const label = item[this.labelProp] || item[this.keyProp].toString()
+          return label.toLowerCase().includes(this.query.toLowerCase()) 
+        }
+      })
+    },
+    handleAllCheckedChange(val) {
+      const filteredData =  this.getFilteredData()
+      this.checked = val ? filteredData
+        .map(item => item[this.keyProp]) : []
     },
     prevPage() {
       this.pageIndex -= 1
-      this.$emit('changePageIndex', this.pageIndex)
+      // this.$emit('changePageIndex', this.pageIndex)
     },
     nextPage() {
       this.pageIndex += 1
-      this.$emit('changePageIndex', this.pageIndex)
+      // this.$emit('changePageIndex', this.pageIndex)
     },
     clearQuery() {
       if (this.inputIcon === 'circle-close') {

@@ -1,7 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: '全栈项目',
+    title: '自动化测试',
     htmlAttrs: {
       lang: 'en'
     },
@@ -18,7 +18,8 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    'element-ui/lib/theme-chalk/index.css'
+    'element-ui/lib/theme-chalk/index.css',
+    '@/assets/css/index'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins

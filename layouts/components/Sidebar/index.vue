@@ -8,9 +8,15 @@
         text-color="#fff"
         active-text-color="#ffd04b"
       >
+        <el-menu-item index="0">
+          <template slot="title">
+            <i class="el-icon-s-home" />
+            <nuxt-link to="/">首页</nuxt-link>
+          </template>
+        </el-menu-item>
         <el-submenu index="1">
           <template slot="title">
-            <i class="el-icon-setting"></i>
+            <i class="el-icon-setting" />
             <span>设置</span>
           </template>
           <el-menu-item index="1-1">

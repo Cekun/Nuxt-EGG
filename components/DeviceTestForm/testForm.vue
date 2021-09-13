@@ -1,11 +1,11 @@
 <template>
   <div class="device-test-form">
     <el-form :model="form" ref="form" :rules="rules" label-width="120px" size="medium">
-      <el-form-item label="测试项目：" prop='radio'>
+      <el-form-item label="测试项目：" prop='testItem'>
         <el-radio v-model="form.testItem" :label="1">单品测试</el-radio>
         <el-radio v-model="form.testItem" :label="2">场景测试</el-radio>
       </el-form-item>
-      <el-form-item label="供应商：" prop="surply">
+      <el-form-item label="供应商：" prop="surply" v-if="form.testItem==1">
         <el-select v-model="form.surply">
           <el-option v-for="item in surplyOps"
             :key="item.value"
@@ -14,7 +14,7 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="被测设备：" prop="device">
+      <el-form-item label="被测设备：" prop="device" v-if="form.testItem==1">
         <el-input v-model="form.device.deviceName" style="width: 30%" readonly placeholder="请选择被测设备" />
         <el-button type="primary" @click.prevent="showDeviceDialog=true; $refs.deviceRef.device=form.device">
           {{ !form.device.deviceName ? '添加' : '修改' }}  
@@ -54,7 +54,7 @@
       <el-form-item label="间隔时间：" prop="gapTime">
         <el-input-number v-model="form.gapTime" :min="1" :step="1" controls-position="right" /> 秒
       </el-form-item>
-      <el-form-item label="分析报告：" prop="emailMsg">
+      <el-form-item label="分析报告：" prop="emails">
         <el-radio v-model="form.emailMsg" :label="1">邮件通知</el-radio>
         <el-button type="text" size="medium" @click="showEmailDialog=true; $refs.emailRef.emails=form.emails">设置邮件通知人</el-button> 
       </el-form-item>
@@ -165,7 +165,8 @@ export default {
       this.form.emails = val
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields();
+      this.$refs[formName].resetFields()
+      this.form.directives = [{ directid: '', directName: '' }]
     },
     optTypeChange() {
       this.form.directives = [this.form.directives.shift()]

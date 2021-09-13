@@ -1,14 +1,15 @@
 <template>
   <el-dialog
+    class="test-dialog"
     title="选择被测设备"
     :visible.sync="show"
     :destroy-on-close="true"
     :close-on-click-modal="false"
     @close="$emit('close')"
   >
-    <el-container style="height: 500px; border: 1px solid #eee">
-      <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-        <el-menu>
+    <el-container class="out-container">
+      <el-aside width="160px">
+        <el-menu default-active="1">
           <el-menu-item index="1">
             <i class="el-icon-cloudy"></i>
             <span slot="title">云端获取</span>
@@ -19,12 +20,10 @@
           </el-menu-item>
         </el-menu>
       </el-aside>
-      <el-container>
-        <el-main>
-          <el-table ref="table" :data="list" border highlight-current-row @row-click="handleCloudRowClick">
-            <el-table-column prop="result" label="预期结果" align="center" />
-          </el-table>
-        </el-main>
+      <el-container class="inner-container">
+        <el-table ref="table" :data="list" border highlight-current-row @row-click="handleCloudRowClick">
+          <el-table-column prop="result" label="预期结果" align="center" />
+        </el-table>
       </el-container>
     </el-container>
     <span slot="footer">
@@ -64,7 +63,16 @@ export default {
   methods: {
     handleCloudRowClick(row) {
       this.expect = JSON.parse(JSON.stringify(row))
+    },
+    async getDataList() {
+      const { code, data } = await this.$http('//list');
+      if(code === 0) {
+        this.list = data
+      }
     }
+  },
+  mounted () {
+    this.getDataList();
   },
 };
 </script>

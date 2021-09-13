@@ -64,3 +64,23 @@ body {
   justify-content: space-around;
   align-items: center;
 }
+
+.test-dialog {
+  .el-dialog__body {
+    padding: 10px 20px;
+    .out-container {
+      min-height: 300px;
+      // border: 1px solid #eee;
+      .el-aside {
+        border: 1px solid #e6e6e6;
+        .el-menu {
+          border: none;
+        }
+      }
+      .inner-container {
+        border-top: 1px solid #e6e6e6;
+        border-right: 1px solid #e6e6e6;
+      }
+    }
+  }
+}

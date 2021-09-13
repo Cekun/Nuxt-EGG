@@ -30,10 +30,7 @@ export default {
   data() {
     return {
       show: false,
-      list: [
-        { emailId: '112', email: '123@qq.com', emailUserName: '桂松' },
-        { emailId: '212', email: 'evsaw@163.com', emailUserName: '瘪三' }
-      ],
+      list: [],
       emails: []
     }
   },
@@ -56,7 +53,16 @@ export default {
   methods: {
     handleSelectionChange(val) {
       this.emails = val
+    },
+    async getEmailList() {
+      const { code, data } = await this.$http('/userEmails/list');
+      if(code === 0) {
+        this.list = data
+      }
     }
+  },
+  mounted () {
+    this.getEmailList()
   },
 };
 </script>

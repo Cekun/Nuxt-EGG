@@ -1,25 +1,21 @@
 <template>
   <div class="home-page">
-    <div class="device-test">
-      <nuxt-link to="/deviceTest/entity">实体设备测试</nuxt-link>
-    </div>
-    <div class="device-test">
-      <nuxt-link to="/deviceTest/virtual">虚拟设备测试</nuxt-link>
-    </div>
+    <nuxt-link to="/deviceTest/entity" class="device-test">
+      实体设备测试
+    </nuxt-link>
+    <nuxt-link to="/deviceTest/virtual" class="device-test">
+      虚拟设备测试
+    </nuxt-link>
   </div>
 </template>
 
 <script>
 export default {
   data() {
-    return {
-     
-    }
+    return {};
   },
-  async mounted() {
-   
-  }
-}
+  async mounted() {},
+};
 </script>
 
 
@@ -31,7 +27,8 @@ export default {
     text-align: center;
     line-height: 180px;
     background-color: darkgrey;
-    cursor: pointer;
+    text-decoration: none;
+    color: #000;
   }
 }
 </style>

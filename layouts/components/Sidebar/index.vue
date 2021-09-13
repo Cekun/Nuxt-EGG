@@ -8,24 +8,30 @@
         text-color="#fff"
         active-text-color="#ffd04b"
       >
-        <el-menu-item index="1">
-          <template slot="title">
-            <i class="el-icon-s-home" />
-            <nuxt-link to="/">首页</nuxt-link>
-          </template>
-        </el-menu-item>
-        <el-menu-item index="2">
-          <template slot="title">
-            <i class="el-icon-postcard" />
-            <nuxt-link to="/">任务管理</nuxt-link>
-          </template>
-        </el-menu-item>
-        <el-menu-item index="3">
-          <template slot="title">
-            <i class="el-icon-setting" />
-            <nuxt-link to="/setting">设置</nuxt-link>
-          </template>
-        </el-menu-item>
+        <nuxt-link to="/">
+          <el-menu-item index="1">
+            <template slot="title">
+              <i class="el-icon-s-home" />
+              首页
+            </template>
+          </el-menu-item>
+        </nuxt-link>
+        <nuxt-link to="/task">
+          <el-menu-item index="2">
+            <template slot="title">
+              <i class="el-icon-postcard" />
+              任务管理
+            </template>
+          </el-menu-item>
+        </nuxt-link>
+        <nuxt-link to="/setting">
+          <el-menu-item index="3">
+            <template slot="title">
+              <i class="el-icon-setting" />
+              设置
+            </template>
+          </el-menu-item>
+        </nuxt-link>
 
 
         <!-- <el-submenu index="1">

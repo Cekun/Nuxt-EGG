@@ -1,30 +1,25 @@
 <template>
-  <div>
-    <Nuxt />
+  <div class="login-container">
+    <el-card class="login-card">
+      <Nuxt />
+    </el-card>
   </div>
 </template>
 
 <style lang="scss">
-.form {
-  .el-form-item {
-    margin: 0 10% 22px 10%;
-  }
-  .el-input {
-    width: 90%;
-  }
-  .el-image {
-    height: 40px;
-    overflow: initial;
+.login-container {
+  background-color:darkturquoise;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.login-card {
+  width: 480px;
+  .footer {
+    display: flex;
+    justify-content: center;
   }
 }
-.captcha-container {
-  position: relative;
-  .captcha {
-    position: absolute;
-    right: 0;
-  }
-  .codeBtn {
-    width: 99px;
-  }
-}
+
 </style>

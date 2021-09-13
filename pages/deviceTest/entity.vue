@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <device-test-form />
+    <device-test-form @confirm="confirm" />
   </div>
 </template>
 
@@ -10,6 +10,11 @@ export default {
     return {
       key: "",
     };
+  },
+  methods: {
+    confirm(val) {
+      console.log('form', val)
+    }
   },
 };
 </script>

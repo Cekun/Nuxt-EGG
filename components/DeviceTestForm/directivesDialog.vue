@@ -32,7 +32,6 @@
       <el-button @click="$emit('close')">取消</el-button>
       <el-button type="primary" @click="$emit('confirm', directives)" :disabled="!directives.length">确认</el-button>
     </span>
-
   </el-dialog>
 </template>
 

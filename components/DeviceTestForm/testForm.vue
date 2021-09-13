@@ -15,7 +15,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="被测设备：" prop="device">
-        <el-input v-model="form.device.deviceName" style="width: 30%" readonly />
+        <el-input v-model="form.device.deviceName" style="width: 30%" readonly placeholder="请选择被测设备" />
         <el-button type="primary" @click.prevent="showDeviceDialog=true; $refs.deviceRef.device=form.device">
           {{ !form.device.deviceName ? '添加' : '修改' }}  
         </el-button>
@@ -26,13 +26,13 @@
       </el-form-item>
       
       <el-form-item 
-        :label="`指定集${index+1}：`"
+        :label="`指令集${index+1}：`"
         v-for="(item, index) in form.directives"
         :key="item.directid"
         :prop="'directives.' + index + '.directName'"
-        :rules="{required: true, message: '指定集不能为空'}"
+        :rules="{required: true, message: '指令集不能为空'}"
       >
-        <el-input v-model="item.directName" style="width: 30%" />
+        <el-input v-model="item.directName" style="width: 30%" readonly placeholder="请选择指令集" />
         <el-button 
           v-if="(index+1)==form.directives.length" 
           type="primary" 
@@ -56,16 +56,16 @@
       </el-form-item>
       <el-form-item label="分析报告：" prop="emailMsg">
         <el-radio v-model="form.emailMsg" :label="1">邮件通知</el-radio>
-        <el-button type="text" size="medium" @click="showEmailDialog=true">设置邮件通知人</el-button> 
+        <el-button type="text" size="medium" @click="showEmailDialog=true; $refs.emailRef.emails=form.emails">设置邮件通知人</el-button> 
       </el-form-item>
       <el-form-item label="串口方式：" prop="portType">
         <div class="port-type">
           <el-radio v-model="form.portType" :label="1">adb</el-radio>
-          <el-input v-model="form.adbipt" style="width: 30%" :readonly="form.portType!=1" placeholder="请填写IP" />
+          <el-input v-model="form.adbipt" style="width: 30%" :disabled="form.portType!=1" placeholder="请填写IP" />
         </div>
         <div class="port-type">
           <el-radio v-model="form.portType" :label="2">串口</el-radio>
-          <el-input v-model="form.portipt" style="width: 30%" :readonly="form.portType!=2" placeholder="请填写端口号" />
+          <el-input v-model="form.portipt" style="width: 30%" :disabled="form.portType!=2" placeholder="请填写端口号" />
         </div>
       </el-form-item>
       <el-form-item>
@@ -94,15 +94,22 @@
       @close="showExpectDialog=false"
       @confirm="selectExpect"
     />
+    <email-dialog 
+      ref="emailRef"
+      :visible="showEmailDialog"
+      @close="showEmailDialog=false"
+      @confirm="selectEmail"
+    />
   </div>
 </template>
 
 <script>
 import DevicesDialog from './devicesDialog.vue'
 import DirectivesDialog from './directivesDialog.vue'
-import ExpectDialog from "./expectDialog.vue";
+import ExpectDialog from "./expectDialog.vue"
+import EmailDialog from "./emailDialog.vue"
 export default {
-  components: { DevicesDialog, DirectivesDialog, ExpectDialog },
+  components: { DevicesDialog, DirectivesDialog, ExpectDialog, EmailDialog },
   data() {
       return {
         form: {
@@ -117,7 +124,8 @@ export default {
           portType: 1,
           adbipt: '',
           portipt: '',
-          expectResult: ''
+          expectResult: '',
+          emails: []
         },
         surplyOps: [
           {
@@ -135,7 +143,8 @@ export default {
         showDeviceDialog: false,
         showDirectivesDialog: false,
         showEmailDialog: false,
-        showExpectDialog: false
+        showExpectDialog: false,
+
       }
   },
   methods: {
@@ -151,6 +160,10 @@ export default {
       this.showExpectDialog = false
       this.form.expectResult = val
     },
+    selectEmail(val) {
+      this.showEmailDialog = false
+      this.form.emails = val
+    },
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
@@ -158,7 +171,11 @@ export default {
       this.form.directives = [this.form.directives.shift()]
     },
     onSubmit() {
-      
+      this.$refs.form.validate(valid => {
+        if(valid) {
+          this.$emit('confirm', this.form)
+        }
+      })
     }
   },
 }

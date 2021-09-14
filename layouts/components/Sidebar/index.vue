@@ -45,6 +45,9 @@
           <el-menu-item index="1-2">
             <nuxt-link to="/setting/role">角色管理</nuxt-link>
           </el-menu-item>
+          <el-menu-item index="1-3">
+            <nuxt-link to="/setting/mail">邮箱管理</nuxt-link>
+          </el-menu-item>
         </el-submenu>
         <el-submenu index="2">
           <template slot="title">
@@ -53,8 +56,7 @@
           </template>
           <el-menu-item index="2-1">
             <nuxt-link to="/testComp/transfer">穿梭框</nuxt-link>
-          </el-menu-item>
-        </el-submenu> -->
+          </el-menu-item> -->
 
       </el-menu>
     </el-scrollbar>

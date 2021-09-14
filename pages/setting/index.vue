@@ -7,7 +7,7 @@
       </el-tab-pane>
       <el-tab-pane>
         <span slot="label"><i class="el-icon-message" />&nbsp;邮箱设置</span>
-        邮箱设置
+        <mail/>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -15,8 +15,9 @@
 
 <script>
 import accountSet from './accountSet.vue';
+import mail from './mail/index'
 export default {
-  components: { accountSet },};
+  components: { accountSet, mail },};
 </script>
 
 <style lang="scss" scoped>

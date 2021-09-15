@@ -21,12 +21,12 @@
         </el-menu>
       </el-aside>
       <el-container class="inner-container">
-        <el-table ref="table" :data="list"  highlight-current-row @row-click="handleRowClick">
+        <el-table ref="table" :data="list"  highlight-current-row @row-click="handleRowClick" height="360">
           <el-table-column prop="deviceId" label="设备ID" align="center" />
           <el-table-column prop="deviceName" label="设备名称" align="center" />
           <el-table-column label="状态" align="center">
             <template slot-scope="{ row }">
-              <span v-if="row.type == 1" style="color: green">在线</span>
+              <span v-if="row.status == 'online'" style="color: green">在线</span>
               <span v-else style="color: grey">离线</span>
             </template>
           </el-table-column>
@@ -59,11 +59,8 @@ export default {
   data() {
     return {
       show: false,
-      device: { deviceId: "", deviceName: "", type: 1 },
-      list: [
-        { deviceId: "123", deviceName: "ba", type: 1 },
-        { deviceId: "345", deviceName: "fo", type: 0 },
-      ],
+      device: { deviceId: "", deviceName: "", status: 'online' },
+      list: [],
     };
   },
   methods: {
@@ -71,7 +68,7 @@ export default {
       this.device = JSON.parse(JSON.stringify(row));
     },
     async getDataList() {
-      const { code, data } = await this.$http('//list');
+      const { code, data } = await this.$http('/ManufactureDevice/getDevice');
       if(code === 0) {
         this.list = data
       }

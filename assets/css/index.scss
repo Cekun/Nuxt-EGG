@@ -71,7 +71,7 @@ body {
 .home-page {
   height: calc(100vh - 85px);
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
 }
 
@@ -80,7 +80,6 @@ body {
     padding: 10px 20px;
     .out-container {
       min-height: 300px;
-      // border: 1px solid #eee;
       .el-aside {
         border: 1px solid #e6e6e6;
         .el-menu {

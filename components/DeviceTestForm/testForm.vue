@@ -8,9 +8,9 @@
       <el-form-item label="供应商：" prop="surply" v-if="form.testItem==1">
         <el-select v-model="form.surply">
           <el-option v-for="item in surplyOps"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            :key="item.manuId"
+            :label="item.manurName"
+            :value="item.manuId">
           </el-option>
         </el-select>
       </el-form-item>
@@ -55,7 +55,7 @@
         <el-input-number v-model="form.gapTime" :min="1" :step="1" controls-position="right" /> 秒
       </el-form-item>
       <el-form-item label="分析报告：" prop="emails">
-        <el-radio v-model="form.emailMsg" :label="1">邮件通知</el-radio>
+        <el-checkbox v-model="form.emailMsg">邮件通知</el-checkbox>
         <el-button type="text" size="medium" @click="showEmailDialog=true; $refs.emailRef.emails=form.emails">设置邮件通知人</el-button> 
       </el-form-item>
       <el-form-item label="串口方式：" prop="portType">
@@ -127,16 +127,7 @@ export default {
           expectResult: '',
           emails: []
         },
-        surplyOps: [
-          {
-            label: '华为',
-            value: 1
-          },
-          {
-            label: '中兴',
-            value: 2
-          },
-        ],
+        surplyOps: [],
         rules: {
           abc: []
         },
@@ -147,7 +138,17 @@ export default {
 
       }
   },
+  mounted () {
+    this.getManufactureList();
+  },
   methods: {
+    async getManufactureList() {
+      const { code, data } = await this.$http('/ManufactureDevice/getManufactureList');
+      if(code === 0) {
+        this.surplyOps = data
+        this.form.surply = data[0].manuId
+      }
+    },
     selectDevice(val) {
       this.showDeviceDialog = false
       this.form.device = val

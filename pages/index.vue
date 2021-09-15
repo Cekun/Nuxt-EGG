@@ -26,9 +26,9 @@ export default {
     height: 180px;
     text-align: center;
     line-height: 180px;
-    background-color: darkgrey;
+    background-color: rgb(244, 244, 244);
     text-decoration: none;
-    color: #000;
+    color: rgb(88, 88, 88);
   }
 }
 </style>

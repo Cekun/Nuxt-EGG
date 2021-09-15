@@ -1,5 +1,5 @@
 <template>
-  <block>
+  <div>
     <el-row>
       <el-col :span="4">
         <el-button class="tasklist"
@@ -57,7 +57,7 @@
           </el-table-column>
           <el-table-column
             align="right">
-            <template slot="header" slot-scope="scope">
+            <template slot="header">
               <!--        <el-input-->
               <!--          v-model="search"-->
               <!--          size="mini"-->
@@ -226,7 +226,7 @@
             </el-table-column>
             <el-table-column
               align="right">
-              <template slot="header" slot-scope="scope">
+              <template slot="header">
                 <el-button
                   size="mini">全部删除?</el-button>
               </template>
@@ -248,7 +248,7 @@
       </el-col>
     </el-row>
 
-  </block>
+  </div>
 </template>
 
 <script>
@@ -447,22 +447,17 @@ export default {
       document.removeEventListener('click', this.foo) // 关掉监听，
     },
     styleMenu(menu, event) {
-      console.log(event)
-      console.log((menu.scrollTop-menu.offsetTop) + ' ' + (menu.scrollTop-menu.offsetTop))
-      console.log(menu.style.left + ' ' + menu.style.top)
-      menu.style.left = (event.clientX - 200) + 'px';
-      menu.style.top = (event.clientY - 50) + 'px';
-      if (event.clientX > 1800) {
-        menu.style.left = event.clientX - 200 + 'px'
+      const menuMinWidth = 100;   // menu 宽
+      const offsetLeft = this.$el.getBoundingClientRect().left; // 容器左偏移
+      const offsetWidth = this.$el.offsetWidth         // 容器宽
+      const maxLeft = offsetWidth - menuMinWidth;
+      const left = event.clientX - offsetLeft
+      if (left > maxLeft) {
+        menu.style.left = maxLeft+ 'px'
       } else {
-        menu.style.left = event.clientX - 200 + 'px'
+        menu.style.left = left + 'px'
       }
-      // document.addEventListener('click', this.foo) // 给整个document新增监听鼠标事件，点击任何位置执行foo方法
-      if (event.clientY > 700) {
-        menu.style.top = event.clientY - 200 + 'px'
-      } else {
-        menu.style.top = event.clientY - 50 + 'px'
-      }
+      menu.style.top = event.pageY - 80 + 'px'  // 80: table header-height
     },
     tableRowClassName ({ row }) {
       // console.log('row')

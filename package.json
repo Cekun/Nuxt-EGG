@@ -31,6 +31,7 @@
     "jest": "^27.0.5",
     "node-sass": "^6.0.1",
     "sass-loader": "^10.1.1",
+    "svg-sprite-loader": "^6.0.9",
     "vue-jest": "^3.0.4",
     "webpack-cli": "^4.7.2"
   }
